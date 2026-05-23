@@ -29,7 +29,7 @@ locals {
 # ── SECURITY GROUPS ───────────────────────────────────────────────────────────
 resource "aws_security_group" "ec2" {
   name        = "${local.prefix}-ec2-sg"
-  description = "EC2 ${var.service_name} — permite trafico desde Kong (interno)"
+  description = "EC2 ${var.service_name} - permite trafico desde Kong (interno)"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -58,7 +58,7 @@ resource "aws_security_group" "ec2" {
 
 resource "aws_security_group" "rds" {
   name        = "${local.prefix}-rds-sg"
-  description = "Aurora — solo desde EC2 del servicio"
+  description = "Aurora - solo desde EC2 del servicio"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -72,7 +72,7 @@ resource "aws_security_group" "rds" {
 
 resource "aws_security_group" "redis" {
   name        = "${local.prefix}-redis-sg"
-  description = "ElastiCache — solo desde EC2 del servicio"
+  description = "ElastiCache - solo desde EC2 del servicio"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -84,56 +84,6 @@ resource "aws_security_group" "redis" {
   tags = merge(var.tags, { Name = "${local.prefix}-redis-sg" })
 }
 
-# ── IAM: role para el EC2 ─────────────────────────────────────────────────────
-resource "aws_iam_role" "ec2_role" {
-  name = "${local.prefix}-ec2-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy" "dynamo_policy" {
-  name = "${local.prefix}-dynamo-policy"
-  role = aws_iam_role.ec2_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        # Acceso completo a su propia tabla DynamoDB
-        Effect   = "Allow"
-        Action   = [
-          "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem",
-          "dynamodb:Query",   "dynamodb:Scan",    "dynamodb:UpdateItem",
-          "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem"
-        ]
-        Resource = [
-          aws_dynamodb_table.read_side.arn,
-          "${aws_dynamodb_table.read_side.arn}/index/*"
-        ]
-      },
-      {
-        # Cost Explorer — solo lectura, recurso global
-        Effect   = "Allow"
-        Action   = ["ce:GetCostAndUsage", "ce:GetCostForecast"]
-        Resource = ["*"]
-      }
-    ]
-  })
-}
-
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "${local.prefix}-ec2-profile"
-  role = aws_iam_role.ec2_role.name
-}
 
 # ── EC2 ───────────────────────────────────────────────────────────────────────
 resource "aws_instance" "service" {
@@ -142,7 +92,7 @@ resource "aws_instance" "service" {
   subnet_id              = var.public_subnet_id
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name               = var.key_name
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile   = "LabInstanceProfile"
 
   user_data = <<-EOF
     #!/bin/bash
@@ -213,7 +163,7 @@ resource "aws_elasticache_cluster" "redis" {
 # Single-table design con GSI para listar por tipo de entidad
 resource "aws_dynamodb_table" "read_side" {
   name         = "${local.prefix}-table"
-  billing_mode = "PAY_PER_REQUEST"   # sin capacidad provisionada — escala solo
+  billing_mode = "PAY_PER_REQUEST"   # sin capacidad provisionada - escala solo
   hash_key     = "PK"
   range_key    = "SK"
 
