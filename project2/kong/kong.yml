@@ -1,0 +1,53 @@
+_format_version: "3.0"
+_transform: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Kong DB-less — ruteo HTTP básico a los 3 microservicios.
+# Auth0 (jwt plugin) y Rate Limiting se agregan en el siguiente paso.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  - name: svc-proyecto
+    url: http://svc-proyecto:8000
+    connect_timeout: 10000
+    read_timeout:    60000
+    routes:
+      - name:        route-proyecto
+        paths:       [/api/proyectos]
+        strip_path:  false
+        methods:     [GET, POST, PUT, PATCH, DELETE]
+
+  - name: svc-area
+    url: http://svc-area:8000
+    connect_timeout: 10000
+    read_timeout:    60000
+    routes:
+      - name:        route-area
+        paths:       [/api/areas]
+        strip_path:  false
+        methods:     [GET, POST, PUT, PATCH, DELETE]
+
+  - name: svc-empresa
+    url: http://svc-empresa:8000
+    connect_timeout: 10000
+    read_timeout:    60000
+    routes:
+      - name:        route-empresa
+        paths:       [/api/empresas]
+        strip_path:  false
+        methods:     [GET, POST, PUT, PATCH, DELETE]
+
+plugins:
+  # Correlación de requests para trazabilidad
+  - name: correlation-id
+    config:
+      header_name:    X-Request-ID
+      generator:      uuid
+      echo_downstream: true
+
+  # Logs de acceso estructurados
+  - name: file-log
+    config:
+      path:   /dev/stdout
+      reopen: false
