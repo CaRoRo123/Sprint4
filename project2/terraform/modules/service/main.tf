@@ -16,8 +16,10 @@ variable "vpc_id"            { type = string }
 variable "public_subnet_id" { type = string }
 variable "private_subnets"  { type = list(string) }
 variable "db_username"      { type = string }
-variable "db_password"      { type = string
-                              sensitive = true }
+variable "db_password"      { 
+                              type = string
+                              sensitive = true
+                                 }
 variable "tags"              { type = map(string) }
 
 locals {
@@ -74,7 +76,9 @@ resource "aws_security_group" "redis" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port       = 6379; to_port = 6379; protocol = "tcp"
+    from_port       = 6379
+    to_port = 6379
+    protocol = "tcp"
     security_groups = [aws_security_group.ec2.id]
   }
   tags = merge(var.tags, { Name = "${local.prefix}-redis-sg" })
