@@ -16,7 +16,8 @@ variable "vpc_id"            { type = string }
 variable "public_subnet_id" { type = string }
 variable "private_subnets"  { type = list(string) }
 variable "db_username"      { type = string }
-variable "db_password"      { type = string; sensitive = true }
+variable "db_password"      { type = string
+                              sensitive = true }
 variable "tags"              { type = map(string) }
 
 locals {
@@ -31,16 +32,22 @@ resource "aws_security_group" "ec2" {
 
   ingress {
     description = "Django desde Kong"
-    from_port   = 8000; to_port = 8000; protocol = "tcp"
+    from_port   = 8000
+    to_port = 8000
+    protocol = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
   }
   ingress {
     description = "SSH administración"
-    from_port   = 22; to_port = 22; protocol = "tcp"
+    from_port   = 22
+    to_port = 22
+    protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  # restringir a tu IP en prod
   }
   egress {
-    from_port   = 0; to_port = 0; protocol = "-1"
+    from_port   = 0
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -53,7 +60,9 @@ resource "aws_security_group" "rds" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port       = 5432; to_port = 5432; protocol = "tcp"
+    from_port       = 5432
+    to_port = 5432
+    protocol = "tcp"
     security_groups = [aws_security_group.ec2.id]
   }
   tags = merge(var.tags, { Name = "${local.prefix}-rds-sg" })

@@ -28,7 +28,10 @@ DATABASES = {
         ssl_require=config("DB_SSL", default=False, cast=bool),
     )
 }
-
+# ── DynamoDB (read side) ──────────────────────────────────────────────────────
+DYNAMODB_TABLE   = config("DYNAMODB_TABLE")
+AWS_REGION       = config("AWS_REGION", default="us-east-1")
+ 
 # ─── CACHE (ElastiCache Redis) ───────────────────────────────────────────────
 CACHES = {
     "default": {
