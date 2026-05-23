@@ -7,8 +7,7 @@ variable "instance_type" { default = "t3.nano" }
 variable "ami_id"        { default = "ami-0c7217cdde317cfec" }
 
 variable "key_name" {
-  description = "Nombre del key pair SSH en AWS"
-  type        = string
+  default = "dac_key" 
 }
 
 variable "db_username" {
@@ -16,7 +15,5 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  description = "Contraseña de Aurora — nunca hardcodeada, pasar con -var o TF_VAR_db_password"
-  type        = string
-  sensitive   = true
+  default = "12345678"
 }
