@@ -20,14 +20,14 @@ resource "aws_security_group" "kong" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "HTTP proxy público"
+    description = "HTTP proxy publico"
     from_port   = 8000
     to_port = 8000
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "Admin API — solo VPC interna"
+    description = "Admin API"
     from_port   = 8001
     to_port = 8001
     protocol = "tcp"

@@ -1,9 +1,9 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Módulo: service
+# Modulo: service
 # Crea todo lo necesario para UN microservicio:
 #   EC2 (Django)  ·  Aurora PostgreSQL (write side)
 #   ElastiCache Redis (cache)  ·  DynamoDB (read side)
-#   IAM role con permisos mínimos
+#   IAM role con permisos minimos
 # ─────────────────────────────────────────────────────────────────────────────
 
 variable "project"          { type = string }
@@ -29,7 +29,7 @@ locals {
 # ── SECURITY GROUPS ───────────────────────────────────────────────────────────
 resource "aws_security_group" "ec2" {
   name        = "${local.prefix}-ec2-sg"
-  description = "EC2 ${var.service_name} — permite tráfico desde Kong (interno)"
+  description = "EC2 ${var.service_name} — permite trafico desde Kong (interno)"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -40,7 +40,7 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["10.0.0.0/16"]
   }
   ingress {
-    description = "SSH administración"
+    description = "SSH administracion"
     from_port   = 22
     to_port = 22
     protocol = "tcp"
@@ -234,7 +234,7 @@ resource "aws_dynamodb_table" "read_side" {
     type = "S"
   }
 
-  # GSI para listar todos los ítems de un tipo (ej: todos los PROYECTO)
+  # GSI para listar todos los items de un tipo (ej: todos los PROYECTO)
   global_secondary_index {
     name               = "entity_type-index"
     hash_key           = "entity_type"
