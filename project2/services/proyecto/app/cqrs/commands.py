@@ -20,7 +20,7 @@ def actualizar_proyecto(proyecto_id: int, data: dict) -> Proyecto:
     proyecto = Proyecto.objects.get(pk=proyecto_id)
     for campo, valor in data.items():
         setattr(proyecto, campo, valor)
-    proyecto.save()           # dispara post_save → sync a DynamoDB
+    proyecto.save()         
     return proyecto
 
 
@@ -34,7 +34,6 @@ def eliminar_proyecto(proyecto_id: int) -> None:
     proyecto.activo = False
     proyecto.save()
 
-    # También limpia el nodo en DynamoDB
     sync_delete(proyecto_id)
 
 
