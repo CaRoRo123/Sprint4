@@ -52,3 +52,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LANGUAGE_CODE      = "es-co"
 TIME_ZONE          = "America/Bogota"
 USE_TZ             = True
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Si no hay DB_HOST en el .env, usamos sqlite3 localmente
+if not os.getenv("DB_HOST"):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    # Tu configuración actual de PostgreSQL
+    pass

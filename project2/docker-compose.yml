@@ -29,14 +29,21 @@ services:
       - svc-empresa
     restart: unless-stopped
 
-  # ── SERVICIO PROYECTO ────────────────────────────────────────────────────────
+# ── SERVICIO PROYECTO ────────────────────────────────────────────────────────
   svc-proyecto:
     build:
-      context:    ./services/proyecto
+      context: ./services/proyecto
       dockerfile: Dockerfile
-    env_file: ./services/proyecto/.env
+    # env_file: ./services/proyecto/.env  <-- Coméntalo para que no choque con lo de abajo
     ports:
       - "8010:8000"
+    environment:
+      environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      - AWS_DEFAULT_REGION=us-east-1
+      - DYNAMODB_TABLE_PROYECTO=biteco-dev-proyecto-table
     volumes:
       - ./services/proyecto:/app
     command: python manage.py runserver 0.0.0.0:8000
